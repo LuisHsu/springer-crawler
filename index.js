@@ -15,13 +15,14 @@ fsp.readFile("list.csv")
   .then(entries => new Promise(resolve => {
     let count = 0;
     function launch(entry){
+      let id = count++;
       let index = active_process.length;
-      let worker = child_process.fork(Path.resolve(__dirname, "worker.js"), [entry.name, entry.link, count++])
+      let worker = child_process.fork(Path.resolve(__dirname, "worker.js"), [entry.name, entry.link, id])
       worker.on('message', result => {
         if(result.finished){
-          console.log(`Book ${index} finished`)
+          console.log(`Book ${id} finished`)
         }else{
-          console.error(`Error ${index}: ${JSON.stringify(result.reason)}`)
+          console.error(`Error ${id}: ${JSON.stringify(result.reason)}`)
         }
         active_process.splice(index, 1);
         if(entries.length > 0){
